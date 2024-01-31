@@ -21,9 +21,9 @@ const getListProfessionals = async (url: string) => {
             const contenidoHtml = $(element);
             const contenth3 = $(contenidoHtml).find('h3.h4.mb-0.flex-wrap');
             const alinkperfil = $(contenth3).find('a.text-body').attr('href');
-            resultslinkperfil.push({
-                alinkperfil
-            });
+            if (alinkperfil.match('/kinesiologo')) {
+                resultslinkperfil.push(alinkperfil);
+            }
         });
         const ulnexturls = $('ul.pagination.pagination-lg');
         ulnexturls.each((_index, ulElement) => {
@@ -48,8 +48,8 @@ const getListProfessionals = async (url: string) => {
 const processPage = async () => {
     let results = [];
     let page = 1;
-    const numbersPage = 20;
-    while (true) {
+    const numbersPage = 1;
+    while (page <= 2) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },
