@@ -1,30 +1,24 @@
 import express from 'express';
-import { Scraper } from './scraperBase/scraper';
-import { processPageProfessional } from './scraperProfessional/scraper_profesional';
-// import { processPageProfessionalPrice } from './scraperProfessional/scraper_price';
+// import { Scraper } from './scraperBase/scraper';
 const app = express();
 const PORT = 3000;
 
 require('dotenv').config();
 
 const indexRouter = express.Router();
+app.use(express.json());
 
 // Ruta de ejemplo
 indexRouter.get('/', (_req, res) => {
     res.json({ message: '¡Bienvenido a mi API!' });
 });
 
-indexRouter.get('/scraper', async (_req, res) => {
-    res.json(await Scraper());
+indexRouter.post('/scraper', (req, res) => {
+    const { webhook = null } = req.body;
+    console.log(webhook);
+    // Scraper(webhook);
+    res.json({ ok: true });
 });
-indexRouter.get('/professional', async (_req, res) => {
-    res.json(await processPageProfessional());
-    // res.json({ message: 'holi' });
-});
-// indexRouter.get('/professional_price', async (_req, res) => {
-//     res.json(await processPageProfessionalPrice());
-//     // res.json({ message: 'holi' });
-// });
 
 app.use('/api', indexRouter);
 

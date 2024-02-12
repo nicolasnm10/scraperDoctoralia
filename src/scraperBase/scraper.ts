@@ -1,8 +1,8 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
-
-const getListProfessionals = async (url: string) => {
+import { processPageP } from '../scraperProfessional/scraper_profesional';
+export const getListProfessionals = async (url: string) => {
     console.log(url);
     try {
         const response = await axios.get(url);
@@ -45,11 +45,11 @@ const getListProfessionals = async (url: string) => {
     }
 };
 
-const processPage = async () => {
+export const processPage = async () => {
     let results = [];
     let page = 1;
-    const numbersPage = 1;
-    while (page <= 2) {
+    const numbersPage = 10;
+    while (page <= 50) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },
@@ -81,7 +81,10 @@ const processPage = async () => {
 };
 
 export const Scraper = async () => {
-    const results = await processPage();
-    console.log('number url:', results.length);
-    return results;
+    const resultsUrl = await processPage();
+    console.log('number url:', resultsUrl.length);
+    const results_url = await processPageP(resultsUrl);
+    console.log('number url results:', results_url.length);
+    //
+    return results_url;
 };
