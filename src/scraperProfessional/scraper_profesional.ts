@@ -18,12 +18,15 @@ export const processPageProfessional = async (urls: string) => {
             const html = response.data;
             const $ = cheerio.load(html);
             const pathfoto = 'https://';
-
+            const siteId = $(
+                'div[itemtype="http://schema.org/Physician"]'
+            ).attr('data-eecommerce-id');
             const name = cleanText(
                 $(
                     'div.unified-doctor-header-info__name span[itemprop="name"]'
                 ).text()
             );
+
             let foto_perfil = $(
                 'div.pr-2 div[data-image-gallery="true"] a'
             ).attr('href');
@@ -192,18 +195,19 @@ export const processPageProfessional = async (urls: string) => {
             const servicioArray: unknown[] = [...serviciosList];
             resultados.push({
                 name: name,
-                grupo_edad_atendida: grupo_edad_atentida,
-                especialidad: especialidad,
-                foto_perfil: foto_perfil,
-                direccion: direccion,
-                educacionList: educacionList,
-                experienciaList: experienciaList,
-                fotosSet: fotosArray,
-                pagoList: pagoArray,
-                numList: numList,
-                enfermedadesList: enfermedadesList,
-                descripcion: descripicon,
-                serviciosList: servicioArray
+                group_age: grupo_edad_atentida,
+                Especiality: especialidad,
+                photo_profile: pathfoto + foto_perfil,
+                address: direccion,
+                vocational_training: educacionList,
+                experience: experienciaList,
+                photo: fotosArray,
+                payment_method: pagoArray,
+                cell_phone: numList,
+                diseases: enfermedadesList,
+                description: descripicon,
+                services: servicioArray,
+                siteId: siteId
             });
         } catch (error) {
             console.error(
