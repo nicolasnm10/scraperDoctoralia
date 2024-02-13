@@ -49,7 +49,7 @@ export const processPage = async () => {
     let results = [];
     let page = 1;
     const numbersPage = 10;
-    while (page <= 50) {
+    while (page <= 20) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },
@@ -80,11 +80,21 @@ export const processPage = async () => {
     return results;
 };
 
-export const Scraper = async () => {
+export const Scraper = async (webhook: string) => {
     const resultsUrl = await processPage();
     console.log('number url:', resultsUrl.length);
-    const results_url = await processPageP(resultsUrl);
-    console.log('number url results:', results_url.length);
+    const results_professional = await processPageP(resultsUrl);
+    console.log('number url results:', results_professional.length);
+    sendToWebhook(results_professional, webhook);
+
     //
-    return results_url;
+    return results_professional;
+};
+const sendToWebhook = async (data: any, webhook: string) => {
+    try {
+        await axios.post(webhook, { data: data });
+        console.log('Datos enviados al webhook correctamente.');
+    } catch (error) {
+        console.error('Error al enviar datos al webhook:', error.message);
+    }
 };

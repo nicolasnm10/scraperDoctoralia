@@ -1,5 +1,5 @@
 import express from 'express';
-// import { Scraper } from './scraperBase/scraper';
+import { Scraper } from './scraperBase/scraper';
 const app = express();
 const PORT = 3000;
 
@@ -16,7 +16,7 @@ indexRouter.get('/', (_req, res) => {
 indexRouter.post('/scraper', (req, res) => {
     const { webhook = null } = req.body;
     console.log(webhook);
-    // Scraper(webhook);
+    Scraper(webhook);
     res.json({ ok: true });
 });
 
