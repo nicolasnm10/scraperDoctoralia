@@ -48,8 +48,8 @@ export const getListProfessionals = async (url: string) => {
 export const processPage = async () => {
     let results = [];
     let page = 1;
-    const numbersPage = 10;
-    while (page <= 20) {
+    const numbersPage = 1;
+    while (page <= 1) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },

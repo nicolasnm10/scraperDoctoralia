@@ -17,6 +17,7 @@ export const processPageProfessional = async (urls: string) => {
             const response = await axios.get(urls);
             const html = response.data;
             const $ = cheerio.load(html);
+            const pathfoto = 'https://';
 
             const name = cleanText(
                 $(
@@ -29,6 +30,7 @@ export const processPageProfessional = async (urls: string) => {
             if (foto_perfil === undefined) {
                 foto_perfil = '';
             }
+
             const especialidad = cleanText(
                 $(
                     'h2.h4.text-muted.font-weight-normal.mb-0-5.d-flex span.text-truncate a[title="Kinesiólogo"]'
@@ -85,7 +87,8 @@ export const processPageProfessional = async (urls: string) => {
                 'div[data-test-id="doctor-exp-photo"] div[class="media-body"] ul[class="list-unstyled clearfix"] li a'
             ).each(function () {
                 const texto = $(this).attr('href');
-                fotosSet.add(texto);
+                const pathfototexto = pathfoto + texto;
+                fotosSet.add(pathfototexto);
             });
             console.log(fotosSet, 'fotos');
 
@@ -187,7 +190,6 @@ export const processPageProfessional = async (urls: string) => {
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
-
             resultados.push({
                 name: name,
                 grupo_edad_atendida: grupo_edad_atentida,
