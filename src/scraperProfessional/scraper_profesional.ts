@@ -9,6 +9,13 @@ function cleanText(text: string): string {
         .replace(/\s+/g, ' ');
 }
 
+function textToList(text: string) {
+    if (text.length >= 1) {
+        return text.trim().split(',');
+    }
+    return [];
+}
+
 export const processPageProfessional = async (urls: string) => {
     const resultados = [];
     try {
@@ -193,9 +200,10 @@ export const processPageProfessional = async (urls: string) => {
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
+
             resultados.push({
                 name: name,
-                group_age: grupo_edad_atentida,
+                group_age: textToList(grupo_edad_atentida),
                 Especiality: especialidad,
                 photo_profile: pathfoto + foto_perfil,
                 address: direccion,
