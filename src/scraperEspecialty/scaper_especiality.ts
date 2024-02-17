@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export const getListEspeciality = async () => {
     const url = 'https://www.doctoralia.cl/especialidades-medicas';
+    const urlDoctoralia = 'https://www.doctoralia.cl';
     const resultados = [];
     try {
         const response = await axios.get(url);
@@ -25,7 +26,7 @@ export const getListEspeciality = async () => {
             'section[class="card card-shadow-1 mb-1"] div[class="card-header"] a'
         ).each((_index, element) => {
             const especiality_url = $(element).attr('href');
-            list_url_especiality.push(especiality_url);
+            list_url_especiality.push(urlDoctoralia + especiality_url);
         });
         resultados.push({
             name: list_name_especiality,
