@@ -1,5 +1,6 @@
 import express from 'express';
 import { Scraper } from './scraperBase/scraper';
+import { getListEspeciality } from './scraperEspecialty/scaper_especiality';
 const app = express();
 const PORT = 3000;
 
@@ -18,6 +19,11 @@ indexRouter.post('/scraper', (req, res) => {
     console.log(webhook);
     Scraper(webhook);
     res.json({ ok: true });
+});
+indexRouter.get('/scraper/especiality', async (_req, res) => {
+    const result = await getListEspeciality();
+    console.log('result:', result);
+    res.json(result);
 });
 
 app.use('/api', indexRouter);
