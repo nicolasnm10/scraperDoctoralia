@@ -1,8 +1,9 @@
 import express from 'express';
+import { Scraper } from './scraper';
 const app = express();
-const PORT = 3001;
+const PORT = 3000;
 
-require('dotenv').config()
+require('dotenv').config();
 
 const indexRouter = express.Router();
 
@@ -11,11 +12,12 @@ indexRouter.get('/', (_req, res) => {
     res.json({ message: '¡Bienvenido a mi API!' });
 });
 
+indexRouter.get('/scraper', async (_req, res) => {
+    res.json(await Scraper());
+});
+
 app.use('/api', indexRouter);
 
-// Escuchar en el puerto 3000
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
-
-
