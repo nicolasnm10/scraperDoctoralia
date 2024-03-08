@@ -45,7 +45,7 @@ export const getListProfessionals = async (url: string) => {
     }
 };
 
-export const processPage = async () => {
+export const processPage = async (web: string, category: string) => {
     let results = [];
     let page = 1;
     const numbersPage = 2;
@@ -59,7 +59,7 @@ export const processPage = async () => {
                 await PromisePool.withConcurrency(numbersPage)
                     .for(listPages)
                     .process(async (page) => {
-                        const url = `https://www.doctoralia.cl/kinesiologo/${page}`;
+                        const url = `https://www.${web}.cl/${category}/${page}`;
                         const urls = await getListProfessionals(url);
                         return urls;
                     });
@@ -80,15 +80,27 @@ export const processPage = async () => {
     return results;
 };
 
-export const Scraper = async (webhook: string) => {
-    const resultsUrl = await processPage();
+const validWebs = ['doctoralia'];
+const validCategorys = ['kinesiologo'];
+
+export const Scraper = async (
+    webhook: string,
+    web: string,
+    category: string
+): Promise<boolean> => {
+    // valid web
+    if (!validWebs.includes(web)) {
+        return false;
+    }
+    if (!validCategorys.includes(category)) {
+        return false;
+    }
+    const resultsUrl = await processPage(web, category);
     console.log('number url:', resultsUrl.length);
     const results_professional = await processPageP(resultsUrl);
     console.log('number url results:', results_professional.length);
     sendToWebhook(results_professional, webhook);
-
-    //
-    return results_professional;
+    return true;
 };
 const sendToWebhook = async (data: any, webhook: string) => {
     try {

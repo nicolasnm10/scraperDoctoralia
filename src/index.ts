@@ -15,10 +15,14 @@ indexRouter.get('/', (_req, res) => {
 });
 
 indexRouter.post('/scraper', (req, res) => {
-    const { webhook = null } = req.body;
+    const {
+        webhook = null,
+        web = 'doctoralia',
+        category = 'kinesiologo'
+    } = req.body;
     console.log(webhook);
-    Scraper(webhook);
-    res.json({ ok: true });
+    const status = Scraper(webhook, web, category);
+    res.json({ ok: status });
 });
 indexRouter.get('/scraper/especiality', async (_req, res) => {
     const result = await getListEspeciality();
