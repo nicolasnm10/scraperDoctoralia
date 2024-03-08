@@ -49,7 +49,7 @@ export const processPage = async (web: string, category: string) => {
     let results = [];
     let page = 1;
     const numbersPage = 2;
-    while (page <= 2) {
+    while (page <= 3) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },
@@ -59,7 +59,12 @@ export const processPage = async (web: string, category: string) => {
                 await PromisePool.withConcurrency(numbersPage)
                     .for(listPages)
                     .process(async (page) => {
-                        const url = `https://www.${web}.cl/${category}/${page}`;
+                        let url = '';
+                        if (page === 1) {
+                            url = `https://www.${web}.cl/${category}/`;
+                        } else {
+                            url = `https://www.${web}.cl/${category}/${page}`;
+                        }
                         const urls = await getListProfessionals(url);
                         return urls;
                     });
