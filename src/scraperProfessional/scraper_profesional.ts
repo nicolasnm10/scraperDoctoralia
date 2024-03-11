@@ -35,7 +35,7 @@ export const processPageProfessional = async (urls: string) => {
             );
 
             let foto_perfil = $(
-                'div.pr-2 div[data-image-gallery="true"] a'
+                'div.pr-1 div[data-image-gallery="true"] a'
             ).attr('href');
             if (foto_perfil === undefined) {
                 foto_perfil = '';
