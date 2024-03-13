@@ -42,10 +42,9 @@ export const processPageProfessional = async (urls: string) => {
             }
 
             const especialidad = cleanText(
-                $(
-                    'h2.h4.text-muted.font-weight-normal.mb-0-5.d-flex span.text-truncate a[title="Kinesiólogo"]'
-                ).text()
+                $('span[data-test-id="doctor-specializations"]').text()
             );
+            console.log(especialidad, 'especialidad');
             const direccion = $('h5.m-0.font-weight-normal span.text-body')
                 .map(function () {
                     return cleanText($(this).text());
