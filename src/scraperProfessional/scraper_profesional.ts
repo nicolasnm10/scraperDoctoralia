@@ -6,7 +6,8 @@ function cleanText(text: string): string {
     return text
         .trim()
         .replace(/\t|\n|\s{2,}/g, ' ')
-        .replace(/\s+/g, ' ');
+        .replace(/\s+/g, ' ')
+        .replace(/[^a-zA-Z\s]/g, '');
 }
 
 function textToList(text: string) {
@@ -55,7 +56,9 @@ export const processPageProfessional = async (urls: string) => {
             }
 
             const especialidad = cleanText(
-                $('span[data-test-id="doctor-specializations"]').text()
+                $('span[data-test-id="doctor-specializations"]')
+                    .text()
+                    .replace(/,[^,]*/g, '')
             );
             console.log(especialidad, 'especialidad');
             const direccion = $('h5.m-0.font-weight-normal span.text-body')
