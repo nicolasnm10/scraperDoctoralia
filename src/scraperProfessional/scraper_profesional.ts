@@ -15,6 +15,19 @@ function textToList(text: string) {
     }
     return [];
 }
+function listToObject(
+    listaClaves: any[],
+    listaValores: any[]
+): { [key: string]: any } {
+    const resultado: { [key: string]: any } = {};
+
+    // Asumiendo que las listas tienen la misma longitud
+    for (let i = 0; i < listaClaves.length; i++) {
+        resultado[listaClaves[i]] = listaValores[i];
+    }
+
+    return resultado;
+}
 
 export const processPageProfessional = async (urls: string) => {
     const resultados = [];
@@ -33,7 +46,7 @@ export const processPageProfessional = async (urls: string) => {
                     'div.unified-doctor-header-info__name span[itemprop="name"]'
                 ).text()
             );
-
+            console.log(name, 'name');
             let foto_perfil = $(
                 'div.pr-1 div[data-image-gallery="true"] a'
             ).attr('href');
@@ -99,7 +112,7 @@ export const processPageProfessional = async (urls: string) => {
                 const pathfototexto = pathfoto + texto;
                 fotosSet.add(pathfototexto);
             });
-            console.log(fotosSet, 'fotos');
+            // console.log(fotosSet, 'fotos');
 
             const grupo_edad_atentida = cleanText(
                 $(
@@ -127,7 +140,7 @@ export const processPageProfessional = async (urls: string) => {
                     pagoList.add(texto);
                 });
             }
-            console.log(pagoList, 'pagoList');
+            // console.log(pagoList, 'pagoList');
             const numList = [];
             $('div.media.m-0 div.mr-1 div[class="modal fade"]').each(
                 function () {
@@ -139,14 +152,26 @@ export const processPageProfessional = async (urls: string) => {
                 }
             );
 
-            const enfermedadesList = [];
+            const enfermedadesValorList = [];
             $('div#data-type-disease ul.list-unstyled.text-list li').each(
                 function () {
                     const enfermedad = $(this).text().trim();
-                    enfermedadesList.push(enfermedad);
+                    enfermedadesValorList.push(enfermedad);
+                }
+            );
+            console.log(enfermedadesValorList, 'enfermedades valor');
+
+            const enfermedadesclaveList = [];
+            $('div#data-type-disease ul.list-unstyled.text-list li a').each(
+                function () {
+                    const regex = /^\/([^\/]+)\/([^\/]+)\/([^\/]+)$/;
+                    const enfermedad = $(this).attr('href');
+                    const matches = enfermedad.match(regex)[2];
+                    enfermedadesclaveList.push(matches);
                 }
             );
 
+            console.log(enfermedadesclaveList, 'enfermedades clave');
             const descripicon = cleanText(
                 $('div[data-id="doctor-items-modals"] p').text()
             );
@@ -199,7 +224,11 @@ export const processPageProfessional = async (urls: string) => {
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
-
+            const objectclavevalor = listToObject(
+                enfermedadesclaveList,
+                enfermedadesValorList
+            );
+            console.log(objectclavevalor, 'tuple');
             resultados.push({
                 name: name,
                 group_age: textToList(grupo_edad_atentida),
@@ -211,7 +240,7 @@ export const processPageProfessional = async (urls: string) => {
                 photo: fotosArray,
                 payment_method: pagoArray,
                 cell_phone: numList,
-                diseases: enfermedadesList,
+                diseases: objectclavevalor,
                 description: descripicon,
                 services: servicioArray,
                 siteId: siteId

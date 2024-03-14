@@ -49,7 +49,7 @@ export const processPage = async (web: string, category: string) => {
     let results = [];
     let page = 1;
     const numbersPage = 2;
-    while (page <= 3) {
+    while (page <= 2) {
         try {
             const listPages = Array.from(
                 { length: numbersPage },
