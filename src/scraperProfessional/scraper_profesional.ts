@@ -5,9 +5,12 @@ import { PromisePool } from '@supercharge/promise-pool';
 function cleanText(text: string): string {
     return text
         .trim()
-        .replace(/\t|\n|\s{2,}/g, ' ')
+        .replace(/\t|\n|\s{2,}/g, '')
         .replace(/\s+/g, ' ')
-        .replace(/[^a-zA-Z\s]/g, '');
+        .replace(/•\s*\$[\d,.]+/, '');
+}
+function cleanPrice(text: string): string {
+    return text.trim().replace(/[^\d$€£¥]/g, '');
 }
 
 function textToList(text: string) {
@@ -60,13 +63,12 @@ export const processPageProfessional = async (urls: string) => {
                     .text()
                     .replace(/,[^,]*/g, '')
             );
-            console.log(especialidad, 'especialidad');
+            // console.log(especialidad, 'especialidad');
             const direccion = $('h5.m-0.font-weight-normal span.text-body')
                 .map(function () {
                     return cleanText($(this).text());
                 })
                 .get();
-
             const educacionList = [];
             let educacion = $(
                 'div#data-type-school ul.list-unstyled.text-list li'
@@ -86,7 +88,6 @@ export const processPageProfessional = async (urls: string) => {
                         educacionList.push(texto);
                     });
             }
-
             const experienciaList = [];
             let experiencia = $(
                 'div#data-type-practice ul.list-unstyled.text-list li'
@@ -106,7 +107,6 @@ export const processPageProfessional = async (urls: string) => {
                         experienciaList.push(texto);
                     });
             }
-
             const fotosSet = new Set();
             $(
                 'div[data-test-id="doctor-exp-photo"] div[class="media-body"] ul[class="list-unstyled clearfix"] li a'
@@ -115,8 +115,6 @@ export const processPageProfessional = async (urls: string) => {
                 const pathfototexto = pathfoto + texto;
                 fotosSet.add(pathfototexto);
             });
-            // console.log(fotosSet, 'fotos');
-
             const grupo_edad_atentida = cleanText(
                 $(
                     'div[data-test-id="doctor-address-allowed-patients"] div.media-body.text-muted span'
@@ -124,9 +122,7 @@ export const processPageProfessional = async (urls: string) => {
                     .first()
                     .text()
             );
-
             const pagoList = new Set();
-
             let pago = $(
                 'div[data-id="address-82185-payments"] div.modal-body.p-0 div.p-2 span'
             );
@@ -143,7 +139,6 @@ export const processPageProfessional = async (urls: string) => {
                     pagoList.add(texto);
                 });
             }
-            // console.log(pagoList, 'pagoList');
             const numList = [];
             $('div.media.m-0 div.mr-1 div[class="modal fade"]').each(
                 function () {
@@ -154,7 +149,6 @@ export const processPageProfessional = async (urls: string) => {
                     numList.push(phoneNumber);
                 }
             );
-
             const enfermedadesValorList = [];
             $('div#data-type-disease ul.list-unstyled.text-list li').each(
                 function () {
@@ -162,8 +156,6 @@ export const processPageProfessional = async (urls: string) => {
                     enfermedadesValorList.push(enfermedad);
                 }
             );
-            console.log(enfermedadesValorList, 'enfermedades valor');
-
             const enfermedadesclaveList = [];
             $('div#data-type-disease ul.list-unstyled.text-list li a').each(
                 function () {
@@ -173,8 +165,6 @@ export const processPageProfessional = async (urls: string) => {
                     enfermedadesclaveList.push(matches);
                 }
             );
-
-            console.log(enfermedadesclaveList, 'enfermedades clave');
             const descripicon = cleanText(
                 $('div[data-id="doctor-items-modals"] p').text()
             );
@@ -187,41 +177,28 @@ export const processPageProfessional = async (urls: string) => {
             }
 
             const serviciosList = new Set();
-            $('div[data-test-id="profile-pricing-list-details"]').each(
+            $('div[data-test-id="address-services-modal-service-item"]').each(
                 function () {
-                    // Obtener el nombre específico del elemento actual
                     const name = cleanText(
                         $(this)
-                            .prev(
-                                'div[data-test-id="profile-pricing-list-element"]'
-                            )
-                            .find('p[itemprop="availableService"]')
+                            .find('.text-body')
                             .text()
+                            .replace(/(Saber más|Desde)\s*/g, '')
                     );
-
-                    const precio = cleanText(
-                        $(this)
-                            .find(
-                                'p[data-test-id="profile-pricing-element-price"]'
-                            )
-                            .text()
-                    ).replace(/(Saber más|Desde)\s*/g, '');
-
+                    const precio = cleanPrice(
+                        $(this).find('[data-id="service-price"]').text()
+                    );
                     const descripcion = cleanText(
                         $(this)
-                            .find(
-                                'p[data-test-id="profile-pricing-element-description"]'
-                            )
+                            .find('[data-dp-expander-auto-start-slice="200"]')
                             .text()
                     );
 
-                    if (name && precio && descripcion) {
-                        serviciosList.add({
-                            name,
-                            precio,
-                            descripcion
-                        });
-                    }
+                    serviciosList.add({
+                        name,
+                        precio,
+                        descripcion
+                    });
                 }
             );
             const fotosArray: unknown[] = [...fotosSet];
@@ -231,7 +208,6 @@ export const processPageProfessional = async (urls: string) => {
                 enfermedadesclaveList,
                 enfermedadesValorList
             );
-            console.log(objectclavevalor, 'tuple');
             resultados.push({
                 name: name,
                 group_age: textToList(grupo_edad_atentida),
