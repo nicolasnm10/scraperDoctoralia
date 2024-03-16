@@ -10,7 +10,10 @@ function cleanText(text: string): string {
         .replace(/•\s*\$[\d,.]+/, '');
 }
 function cleanPrice(text: string): string {
-    return text.trim().replace(/[^\d$€£¥]/g, '');
+    return text
+        .trim()
+        .replace(/[^\d$€£¥]/g, '')
+        .replace(/[^\w\s]/g, '');
 }
 
 function textToList(text: string) {
@@ -183,12 +186,16 @@ export const processPageProfessional = async (urls: string) => {
                         $(this)
                             .find('.text-body')
                             .text()
-                            .replace(/(Saber más|Desde)\s*/g, '')
+                            .replace(
+                                /(Saber más|Desde|• Consultar valores)\s*/g,
+                                ''
+                            )
                     );
-                    const precio = cleanPrice(
+                    const price = cleanPrice(
                         $(this).find('[data-id="service-price"]').text()
                     );
-                    const descripcion = cleanText(
+                    const numberPrice = parseInt(price);
+                    const description = cleanText(
                         $(this)
                             .find('[data-dp-expander-auto-start-slice="200"]')
                             .text()
@@ -196,11 +203,12 @@ export const processPageProfessional = async (urls: string) => {
 
                     serviciosList.add({
                         name,
-                        precio,
-                        descripcion
+                        numberPrice,
+                        description
                     });
                 }
             );
+            console.log(serviciosList, 'list');
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
