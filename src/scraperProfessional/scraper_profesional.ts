@@ -35,7 +35,36 @@ function listToObject(
 
     return resultado;
 }
-
+interface Address {
+    regions: {
+        code: string;
+        text: string;
+    };
+    communes: {
+        code: string;
+        text: string;
+    };
+    addresss: {
+        text: string;
+    };
+}
+const regiones = {
+    Aysén: 'CL-AI',
+    Antofagasta: 'CL-AN',
+    'Arica y Parinacota': 'CL-AP',
+    Atacama: 'CL-AT',
+    Biobío: 'CL-BI',
+    Coquimbo: 'CL-CO',
+    'La Araucanía': 'CL-AR',
+    "Libertador B. O'Higgins": 'CL-LI',
+    'Los Lagos': 'CL-LL',
+    'Los Ríos': 'CL-LR',
+    Magallanes: 'CL-MA',
+    Maule: 'CL-ML',
+    'Metropolitana de Santiago': 'CL-RM',
+    Tarapacá: 'CL-TA',
+    Valparaíso: 'CL-VS'
+};
 export const processPageProfessional = async (urls: string) => {
     const resultados = [];
     try {
@@ -67,11 +96,6 @@ export const processPageProfessional = async (urls: string) => {
                     .replace(/,[^,]*/g, '')
             );
             // console.log(especialidad, 'especialidad');
-            const direccion = $('h5.m-0.font-weight-normal span.text-body')
-                .map(function () {
-                    return cleanText($(this).text());
-                })
-                .get();
             const educacionList = [];
             let educacion = $(
                 'div#data-type-school ul.list-unstyled.text-list li'
@@ -208,7 +232,46 @@ export const processPageProfessional = async (urls: string) => {
                     });
                 }
             );
-            console.log(serviciosList, 'list');
+            // console.log(serviciosList, 'list');
+            // a[data-online-only="false"]
+
+            const addresList: Address[] = [];
+
+            $('div[data-test-id="address-info"]').each(function () {
+                const region = $(this)
+                    .find('span[class="province region"]')
+                    .attr('content');
+                const comuna = $('div[data-test-id="address-info"]')
+                    .find('span[class="city"]')
+                    .attr('content');
+                console.log(comuna, 'comuna');
+                const street = $(this)
+                    .find('span[data-test-id="address-info-street"]')
+                    .text();
+                const exampleAddress: Address = {
+                    regions: {
+                        code: 'region_code',
+                        text: region
+                    },
+                    communes: {
+                        code: 'commune_code',
+                        text: comuna
+                    },
+                    addresss: {
+                        text: street
+                    }
+                };
+                let codigo;
+                for (const re in regiones) {
+                    if (region.includes(re)) {
+                        codigo = regiones[re];
+                    }
+                }
+                console.log(codigo);
+                addresList.push(exampleAddress);
+            });
+            console.log(addresList, 'addres');
+
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
@@ -221,7 +284,7 @@ export const processPageProfessional = async (urls: string) => {
                 group_age: textToList(grupo_edad_atentida),
                 Especiality: especialidad,
                 photo_profile: pathfoto + foto_perfil,
-                address: direccion,
+                address: addresList,
                 vocational_training: educacionList,
                 experience: experienciaList,
                 photo: fotosArray,
