@@ -56,7 +56,9 @@ const regiones = {
     Biobío: 'CL-BI',
     Coquimbo: 'CL-CO',
     'La Araucanía': 'CL-AR',
+    'Araucanía': 'CL-AR',
     "Libertador B. O'Higgins": 'CL-LI',
+    "O'Higgins": 'CL-LI',
     'Los Lagos': 'CL-LL',
     'Los Ríos': 'CL-LR',
     Magallanes: 'CL-MA',
@@ -65,6 +67,8 @@ const regiones = {
     Tarapacá: 'CL-TA',
     Valparaíso: 'CL-VS'
 };
+var slugify = require('slugify');
+
 export const processPageProfessional = async (urls: string) => {
     const resultados = [];
     try {
@@ -248,26 +252,26 @@ export const processPageProfessional = async (urls: string) => {
                 const street = $(this)
                     .find('span[data-test-id="address-info-street"]')
                     .text();
-                const exampleAddress: Address = {
-                    regions: {
-                        code: 'region_code',
-                        text: region
-                    },
-                    communes: {
-                        code: 'commune_code',
-                        text: comuna
-                    },
-                    addresss: {
-                        text: street
-                    }
-                };
                 let codigo;
                 for (const re in regiones) {
                     if (region.includes(re)) {
                         codigo = regiones[re];
                     }
                 }
-                console.log(codigo);
+                const exampleAddress: Address = {
+                    regions: {
+                        code: codigo,
+                        text: region
+                    },
+                    communes: {
+                        code: slugify(comuna,{lower:true}),
+                        text: comuna
+                    },
+                    addresss: {
+                        text: street
+                    }
+                };
+
                 addresList.push(exampleAddress);
             });
             console.log(addresList, 'addres');
