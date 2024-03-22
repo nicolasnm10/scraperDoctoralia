@@ -1,7 +1,7 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
-
+const Categoryall = [];
 function cleanText(text: string): string {
     return text
         .trim()
@@ -253,11 +253,8 @@ export const processPageProfessional = async (urls: string) => {
                     });
                 }
             );
-            // console.log(serviciosList, 'list');
-            // a[data-online-only="false"]
 
             const addresList: Address[] = [];
-
             $('div[data-test-id="address-info"]').each(function () {
                 const region = $(this)
                     .find('span[class="province region"]')
@@ -287,7 +284,6 @@ export const processPageProfessional = async (urls: string) => {
                         text: street
                     }
                 };
-
                 addresList.push(exampleAddress);
             });
             const categorysSet = new Set();
@@ -297,7 +293,6 @@ export const processPageProfessional = async (urls: string) => {
             if (category_modal.length >= 1) {
                 category_modal.each(function () {
                     const category = cleanText($(this).text());
-                    // console.log(category, 'cat');
                     categorysSet.add(slugify(category, { lower: true }));
                 });
             } else if (category_modal.length == 0) {
@@ -305,13 +300,15 @@ export const processPageProfessional = async (urls: string) => {
                     'div[data-test-id="doctor-exp-expert_in"] ul[class="text-muted pl-2"] li'
                 ).each(function () {
                     const category = cleanText($(this).text());
-
                     categorysSet.add(slugify(category, { lower: true }));
                 });
             }
-
-            console.log(categorysSet, 'category');
-
+            Categoryall.push(...Array.from(categorysSet));
+            const CategoryallSet = new Set();
+            for (const catSet in Categoryall) {
+                CategoryallSet.add(Categoryall[catSet]);
+            }
+            console.log(CategoryallSet, 'setttt');
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
@@ -340,7 +337,6 @@ export const processPageProfessional = async (urls: string) => {
                 `Error en la solicitud para ${urls}: ${error.message}`
             );
         }
-
         return resultados;
     } catch (e) {
         console.error(`${e}`);
