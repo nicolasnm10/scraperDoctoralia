@@ -7,8 +7,25 @@ function cleanText(text: string): string {
         .trim()
         .replace(/\t|\n|\s{2,}/g, '')
         .replace(/\s+/g, ' ')
-        .replace(/•\s*\$[\d,.]+/, '');
+        .replace(/•\s*\$[\d,.]+/, '')
+        .replace(/[ñ]/g, 'n');
 }
+// function removeAccents(text: string): string {
+//     return text.replace(/[áàäâã]/g, 'a')
+//                .replace(/[éèëê]/g, 'e')
+//                .replace(/[íìïî]/g, 'i')
+//                .replace(/[óòöôõ]/g, 'o')
+//                .replace(/[úùüû]/g, 'u')
+//                .replace(/[ÁÀÄÂÃ]/g, 'A')
+//                .replace(/[ÉÈËÊ]/g, 'E')
+//                .replace(/[ÍÌÏÎ]/g, 'I')
+//                .replace(/[ÓÒÖÔÕ]/g, 'O')
+//                .replace(/[ÚÙÜÛ]/g, 'U')
+//                .replace(/[ñ]/g, 'n')
+//                .replace(/[Ñ]/g, 'N')
+//                .replace(/[ç]/g, 'c')
+//                .replace(/[Ç]/g, 'C');
+// }
 function cleanPrice(text: string): string {
     return text
         .trim()
@@ -56,7 +73,7 @@ const regiones = {
     Biobío: 'CL-BI',
     Coquimbo: 'CL-CO',
     'La Araucanía': 'CL-AR',
-    'Araucanía': 'CL-AR',
+    Araucanía: 'CL-AR',
     "Libertador B. O'Higgins": 'CL-LI',
     "O'Higgins": 'CL-LI',
     'Los Lagos': 'CL-LL',
@@ -248,7 +265,6 @@ export const processPageProfessional = async (urls: string) => {
                 const comuna = $('div[data-test-id="address-info"]')
                     .find('span[class="city"]')
                     .attr('content');
-                console.log(comuna, 'comuna');
                 const street = $(this)
                     .find('span[data-test-id="address-info-street"]')
                     .text();
@@ -264,7 +280,7 @@ export const processPageProfessional = async (urls: string) => {
                         text: region
                     },
                     communes: {
-                        code: slugify(comuna,{lower:true}),
+                        code: slugify(comuna, { lower: true }),
                         text: comuna
                     },
                     addresss: {
@@ -274,7 +290,27 @@ export const processPageProfessional = async (urls: string) => {
 
                 addresList.push(exampleAddress);
             });
-            console.log(addresList, 'addres');
+            const categorysSet = new Set();
+            let category_modal = $(
+                'div[data-id="doctor-items-modals"] div[id="data-type-expert_in"] ul[class="list-unstyled text-list"] li'
+            );
+            if (category_modal.length >= 1) {
+                category_modal.each(function () {
+                    const category = cleanText($(this).text());
+                    // console.log(category, 'cat');
+                    categorysSet.add(slugify(category, { lower: true }));
+                });
+            } else if (category_modal.length == 0) {
+                $(
+                    'div[data-test-id="doctor-exp-expert_in"] ul[class="text-muted pl-2"] li'
+                ).each(function () {
+                    const category = cleanText($(this).text());
+
+                    categorysSet.add(slugify(category, { lower: true }));
+                });
+            }
+
+            console.log(categorysSet, 'category');
 
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
