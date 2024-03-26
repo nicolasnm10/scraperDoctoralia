@@ -1,7 +1,6 @@
 import cheerio from 'cheerio';
 import axios from 'axios';
 import { PromisePool } from '@supercharge/promise-pool';
-const Categoryall = [];
 function cleanText(text: string): string {
     return text
         .trim()
@@ -303,12 +302,15 @@ export const processPageProfessional = async (urls: string) => {
                     categorysSet.add(slugify(category, { lower: true }));
                 });
             }
+            const Categoryall = [];
             Categoryall.push(...Array.from(categorysSet));
             const CategoryallSet = new Set();
             for (const catSet in Categoryall) {
+                // console.log(catSet, 'catset');
+                // console.log(Categoryall[catSet], 'Categoryall');
                 CategoryallSet.add(Categoryall[catSet]);
             }
-            console.log(CategoryallSet, 'setttt');
+            const especiality_code = slugify(especialidad, { lower: true });
             const fotosArray: unknown[] = [...fotosSet];
             const pagoArray: unknown[] = [...pagoList];
             const servicioArray: unknown[] = [...serviciosList];
@@ -320,6 +322,7 @@ export const processPageProfessional = async (urls: string) => {
                 name: name,
                 group_age: textToList(grupo_edad_atentida),
                 Especiality: especialidad,
+                especiality_code: especiality_code,
                 photo_profile: pathfoto + foto_perfil,
                 address: addresList,
                 vocational_training: educacionList,
@@ -330,13 +333,15 @@ export const processPageProfessional = async (urls: string) => {
                 diseases: objectclavevalor,
                 description: descripicon,
                 services: servicioArray,
-                siteId: siteId
+                siteId: siteId,
+                category: [...CategoryallSet.values()]
             });
         } catch (error) {
             console.error(
                 `Error en la solicitud para ${urls}: ${error.message}`
             );
         }
+        // console.log(resultados, 'result');
         return resultados;
     } catch (e) {
         console.error(`${e}`);
